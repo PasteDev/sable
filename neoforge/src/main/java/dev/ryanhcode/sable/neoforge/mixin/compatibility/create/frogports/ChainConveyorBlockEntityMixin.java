@@ -27,12 +27,16 @@ public abstract class ChainConveyorBlockEntityMixin extends SmartBlockEntity {
 
     @WrapOperation(method = "exportToPort", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/logistics/packagePort/frogport/FrogportBlockEntity;isBackedUp()Z"))
     public boolean sable$testSublevelDistance(final FrogportBlockEntity instance, final Operation<Boolean> original, @Local(argsOnly = true) final ChainConveyorPackage chainPackage) {
+        if (chainPackage == null || instance == null) {
+            return original.call(instance);
+        }
         final Vec3 packagePos = chainPackage.worldPosition;
-        if (packagePos == null) {
+        final BlockPos instancePos = instance.getBlockPos();
+        if (packagePos == null || instancePos == null || instance.getLevel() == null) {
             return original.call(instance);
         }
 
-        final Vec3 frogPos = instance.getBlockPos().getCenter();
+        final Vec3 frogPos = instancePos.getCenter();
 
         final int maxRange = AllConfigs.server().logistics.packagePortRange.get() + 2;
         return original.call(instance) || Sable.HELPER.distanceSquaredWithSubLevels(instance.getLevel(), packagePos, frogPos) > maxRange * maxRange;
@@ -40,13 +44,18 @@ public abstract class ChainConveyorBlockEntityMixin extends SmartBlockEntity {
 
     @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorBlockEntity;notifyPortToAnticipate(Lnet/minecraft/core/BlockPos;)V"))
     public void sable$testSublevelDistance1(final ChainConveyorBlockEntity instance, final BlockPos blockPos, final Operation<Void> original, @Local(name = "portEntry") final Map.Entry<BlockPos, ChainConveyorBlockEntity.ConnectedPort> entry, @Local final ChainConveyorPackage chainPackage) {
+        if (chainPackage == null || entry == null || this.worldPosition == null || this.getLevel() == null) {
+            original.call(instance, blockPos);
+            return;
+        }
         final Vec3 packagePos = chainPackage.worldPosition;
-        if (packagePos == null) {
+        final BlockPos entryKey = entry.getKey();
+        if (packagePos == null || entryKey == null) {
             original.call(instance, blockPos);
             return;
         }
 
-        final Vec3 frogPos = this.worldPosition.offset(entry.getKey()).getCenter();
+        final Vec3 frogPos = this.worldPosition.offset(entryKey).getCenter();
 
         final int maxRange = AllConfigs.server().logistics.packagePortRange.get() + 2;
 

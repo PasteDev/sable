@@ -80,21 +80,25 @@ public class ActiveSableCompanion implements SableCompanion {
 
     @Override
     public @Nullable SubLevel getContaining(final Level level, final SectionPos pos) {
+        if (pos == null) return null;
         return this.getContaining(level, pos.getX(), pos.getZ());
     }
 
     @Override
     public @Nullable SubLevel getContaining(final Level level, final Vec3i pos) {
+        if (pos == null) return null;
         return this.getContaining(level, pos.getX() >> SectionPos.SECTION_BITS, pos.getZ() >> SectionPos.SECTION_BITS);
     }
 
     @Override
     public @Nullable SubLevel getContaining(final Level level, final Position pos) {
+        if (pos == null) return null;
         return this.getContaining(level, Mth.floor(pos.x()) >> SectionPos.SECTION_BITS, Mth.floor(pos.z()) >> SectionPos.SECTION_BITS);
     }
 
     @Override
     public @Nullable SubLevel getContaining(final Level level, final Vector3dc pos) {
+        if (pos == null) return null;
         return this.getContaining(level, Mth.floor(pos.x()) >> SectionPos.SECTION_BITS, Mth.floor(pos.z()) >> SectionPos.SECTION_BITS);
     }
 
@@ -164,6 +168,7 @@ public class ActiveSableCompanion implements SableCompanion {
 
     @Override
     public Vector3d projectOutOfSubLevel(final Level level, final Vector3dc pos, final Vector3d dest) {
+        if (pos == null) return dest;
         final SubLevel subLevel = this.getContaining(level, pos);
 
         if (subLevel == null) return dest.set(pos);
@@ -185,6 +190,7 @@ public class ActiveSableCompanion implements SableCompanion {
 
     @Override
     public Vec3 projectOutOfSubLevel(final Level level, final Position pos) {
+        if (pos == null) return Vec3.ZERO;
         final SubLevel subLevel = this.getContaining(level, pos);
 
         if (subLevel == null) return pos instanceof final Vec3 vec ? vec : new Vec3(pos.x(), pos.y(), pos.z());
@@ -266,6 +272,7 @@ public class ActiveSableCompanion implements SableCompanion {
 
     @Override
     public double distanceSquaredWithSubLevels(final Level level, final Position a, final Position b) {
+        if (a == null || b == null) return Double.POSITIVE_INFINITY;
         final Vec3 globalA = this.projectOutOfSubLevel(level, a);
         final Vec3 globalB = this.projectOutOfSubLevel(level, b);
 
@@ -274,6 +281,7 @@ public class ActiveSableCompanion implements SableCompanion {
 
     @Override
     public double distanceSquaredWithSubLevels(final Level level, final Vector3dc a, final double bX, final double bY, final double bZ) {
+        if (a == null) return Double.POSITIVE_INFINITY;
         final Vector3dc globalA = this.projectOutOfSubLevel(level, a, new Vector3d());
         final Vector3dc globalB = this.projectOutOfSubLevel(level, new Vector3d(bX, bY, bZ));
 
@@ -282,6 +290,7 @@ public class ActiveSableCompanion implements SableCompanion {
 
     @Override
     public double distanceSquaredWithSubLevels(final Level level, final Position a, final double bX, final double bY, final double bZ) {
+        if (a == null) return Double.POSITIVE_INFINITY;
         final Vector3dc globalA = this.projectOutOfSubLevel(level, JOMLConversion.toJOML(a));
         final Vector3dc globalB = this.projectOutOfSubLevel(level, new Vector3d(bX, bY, bZ));
 
