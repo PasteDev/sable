@@ -28,6 +28,9 @@ public abstract class ChainConveyorBlockEntityMixin extends SmartBlockEntity {
 	@WrapOperation(method = "exportToPort", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/logistics/packagePort/frogport/FrogportBlockEntity;isBackedUp()Z"))
 	public boolean sable$testSublevelDistance(final FrogportBlockEntity instance, final Operation<Boolean> original, @Local(argsOnly = true) final ChainConveyorPackage p) {
 		final Vec3 packagePos = p.worldPosition;
+		if (packagePos == null) {
+			return original.call(instance);
+		}
 		final Vec3 frogPos = instance.getBlockPos().getCenter();
 
 		final int maxRange = AllConfigs.server().logistics.packagePortRange.get() + 2;

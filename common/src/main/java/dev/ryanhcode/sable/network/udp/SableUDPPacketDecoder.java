@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.network.udp;
 
+import dev.ryanhcode.sable.Sable;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
@@ -7,7 +8,6 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 import net.minecraft.network.ProtocolSwapHandler;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 
-import java.io.IOException;
 import java.util.List;
 
 public class SableUDPPacketDecoder extends MessageToMessageDecoder<DatagramPacket> implements ProtocolSwapHandler {
@@ -33,19 +33,28 @@ public class SableUDPPacketDecoder extends MessageToMessageDecoder<DatagramPacke
             final short packetID = byteBuf.readUnsignedByte();
 
             if (packetID >= SableUDPPacketType.VALUES.length) {
-                throw new IOException("Received an invalid packet ID: " + packetID);
+                Sable.LOGGER.debug("Received an invalid UDP packet ID: {} from {}", packetID, msg.sender());
+                return;
             }
 
             final SableUDPPacketType packetType = SableUDPPacketType.VALUES[packetID];
-            final SableUDPPacket packet = packetType.create(new RegistryFriendlyByteBuf(byteBuf, null));
+            final SableUDPPacket packet;
+            try {
+                packet = packetType.create(new RegistryFriendlyByteBuf(byteBuf, null));
+            } catch (final Exception e) {
+                Sable.LOGGER.debug("Failed to decode UDP packet {} from {}", packetType, msg.sender(), e);
+                return;
+            }
 
             if (byteBuf.readableBytes() > 0) {
-                throw new IOException(
-                        "SableUDPPacket %s (%s) was larger than expected, found %d bytes extra".formatted(packetType, packet.getClass().getSimpleName(), byteBuf.readableBytes())
+                Sable.LOGGER.debug(
+                        "SableUDPPacket {} ({}) was larger than expected, found {} bytes extra from {}",
+                        packetType, packet.getClass().getSimpleName(), byteBuf.readableBytes(), msg.sender()
                 );
-            } else {
-                out.add(new AddressedSableUDPPacket(packet, msg.sender()));
+                return;
             }
+
+            out.add(new AddressedSableUDPPacket(packet, msg.sender()));
         }
     }
 }

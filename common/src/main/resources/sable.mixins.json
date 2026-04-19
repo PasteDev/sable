@@ -101,6 +101,7 @@
     "compatibility.jade.BlockAccessorImplMixin",
     "compatibility.jade.RayTracingMixin",
     "compatibility.jadeaddons.CreatePluginMixin",
+    "compatibility.lithium.ReflectionUtilMixin",
     "compatibility.vista.LODMixin",
     "compatibility.vista.ViewFinderAccessMixin",
     "compatibility.vista.ViewFinderControllerMixin",
