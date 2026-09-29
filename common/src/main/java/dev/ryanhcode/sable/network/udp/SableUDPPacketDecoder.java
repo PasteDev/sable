@@ -8,7 +8,6 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 import net.minecraft.network.ProtocolSwapHandler;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 
-import java.io.IOException;
 import java.util.List;
 
 public class SableUDPPacketDecoder extends MessageToMessageDecoder<DatagramPacket> implements ProtocolSwapHandler {
@@ -34,7 +33,7 @@ public class SableUDPPacketDecoder extends MessageToMessageDecoder<DatagramPacke
             final short packetID = byteBuf.readUnsignedByte();
 
             if (packetID >= SableUDPPacketType.VALUES.length) {
-                throw new IOException("Received an invalid packet ID: " + packetID);
+                return;
             }
 
             final SableUDPPacketType packetType = SableUDPPacketType.VALUES[packetID];

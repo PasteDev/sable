@@ -20,8 +20,7 @@ public class SableUDPChannelHandlerServer extends SimpleChannelInboundHandler<Ad
     }
 
     @Override
-    public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
-        super.exceptionCaught(ctx, cause);
+    public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
         Sable.LOGGER.error("Server UDP channel caught exception", cause);
     }
 
